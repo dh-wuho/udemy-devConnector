@@ -1,0 +1,5 @@
+{
+    "files.watcherExclude": {
+    "**/devconnector_html_theme/**": true
+  }
+}
