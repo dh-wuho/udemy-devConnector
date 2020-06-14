@@ -1,8 +1,12 @@
 import React, { Fragment, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { setAlert } from '../../actions/alert';
+import { register } from '../../actions/auth';
+import PropTypes from 'prop-types';
 // import axios from 'axios';
 
-export const Register = () => {
+export const Register = ({ setAlert, register, isAuthenticated }) => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -17,26 +21,15 @@ export const Register = () => {
     const onSubmit = async e => {
         e.preventDefault();
         if (password !== password2) {
-            console.log("passwords don't match!");
+            setAlert('Passwords do not match', 'danger', 3000);
         }
         else {
-            console.log('SUCCESS');
-            // const newUser = { name, email, password };
-            // try {
-            //     const config = {
-            //         headers: {
-            //             'Content-Type': 'application/json'
-            //         }
-            //     };
-                
-            //     const body = JSON.stringify(newUser);
-
-            //     const res = await axios.post('/api/users', body, config);
-            //     console.log(res.data);
-            // } catch (error) {
-            //     console.log(error.response.data);
-            // }
+            register({ name, email, password });
         }
+    }
+
+    if(isAuthenticated) {
+        return <Redirect to='/dashboard' />
     }
 
     return (
@@ -51,7 +44,7 @@ export const Register = () => {
                         name="name"
                         value={name}
                         onChange={e => onChange(e)}
-                        required
+                        // required
                     />
                 </div>
                 <div className="form-group">
@@ -98,4 +91,14 @@ export const Register = () => {
     )
 }
 
-export default Register;
+Register.propTypes = {
+    setAlert: PropTypes.func.isRequired,
+    register: PropTypes.func.isRequired,
+    isAuthenticated: PropTypes.bool
+}
+
+const mapStateToProps = state => ({
+    isAuthenticated: state.auth.isAuthenticated
+});
+
+export default connect(mapStateToProps, { setAlert, register })(Register);
